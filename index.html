@@ -18,7 +18,6 @@
             min-height: 100vh;
         }
 
-        /* Контейнер резюме */
         .resume-container {
             max-width: 1000px;
             margin: 0 auto;
@@ -29,7 +28,6 @@
             transition: transform 0.3s ease;
         }
 
-        /* Шапка резюме */
         .resume-header {
             background: linear-gradient(135deg, #2c3e50, #1a1a2e);
             color: white;
@@ -55,7 +53,6 @@
             flex-wrap: wrap;
         }
 
-        /* Основное содержание */
         .resume-content {
             display: grid;
             grid-template-columns: 1fr 2fr;
@@ -63,7 +60,6 @@
             padding: 40px;
         }
 
-        /* Левая колонка */
         .sidebar {
             background: #f8f9fa;
             padding: 20px;
@@ -83,12 +79,10 @@
             margin-bottom: 15px;
         }
 
-        /* Правая колонка */
         .main-content {
             padding: 0 10px;
         }
 
-        /* Редактируемые элементы */
         [contenteditable="true"] {
             outline: none;
             padding: 5px;
@@ -106,7 +100,6 @@
             box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.3);
         }
 
-        /* Анимация при изменении */
         @keyframes editPulse {
             0% { transform: scale(1); background: rgba(102, 126, 234, 0); }
             50% { transform: scale(1.02); background: rgba(102, 126, 234, 0.2); }
@@ -117,7 +110,6 @@
             animation: editPulse 0.4s ease;
         }
 
-        /* Стили для элементов резюме */
         .job-item, .edu-item {
             margin-bottom: 20px;
             padding: 10px;
@@ -151,7 +143,6 @@
             font-size: 0.9em;
         }
 
-        /* Кнопка скачивания */
         .download-btn {
             display: block;
             width: 200px;
@@ -173,8 +164,6 @@
             transform: translateY(-2px);
             box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
         }
-
-        /* Material Wave эффект */
         .wave-effect {
             position: relative;
             overflow: hidden;
@@ -197,7 +186,6 @@
             }
         }
 
-        /* Адаптивность */
         @media (max-width: 768px) {
             .resume-content {
                 grid-template-columns: 1fr;
@@ -213,7 +201,6 @@
             }
         }
 
-        /* Стиль для кнопок действий */
         .action-buttons {
             display: flex;
             justify-content: center;
@@ -242,7 +229,6 @@
             transform: translateY(-2px);
         }
     </style>
-    <!-- Библиотека для PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
@@ -324,7 +310,6 @@
     </div>
 
     <script>
-        // === Material Wave Effect ===
         function addWaveEffect(element) {
             element.addEventListener('click', function(e) {
                 const ripple = document.createElement('span');
@@ -346,7 +331,6 @@
             });
         }
 
-        // Добавляем wave эффект на все кликабельные элементы
         const clickableElements = document.querySelectorAll('.section-title, .job-item, .edu-item, .skill-item, .download-btn, .reset-btn');
         clickableElements.forEach(el => addWaveEffect(el));
 
@@ -360,7 +344,6 @@
             });
         });
 
-        // === Сохранение в localStorage ===
         function saveToLocalStorage() {
             const data = {
                 name: document.getElementById('name').innerHTML,
@@ -385,7 +368,6 @@
             localStorage.setItem('resumeData', JSON.stringify(data));
         }
 
-        // === Загрузка из localStorage ===
         function loadFromLocalStorage() {
             const saved = localStorage.getItem('resumeData');
             if (!saved) return;
@@ -398,7 +380,6 @@
             document.getElementById('location').innerHTML = data.location;
             document.getElementById('contact-details').innerHTML = data.contactDetails;
             
-            // Восстанавливаем навыки
             const skillsContainer = document.getElementById('skills');
             skillsContainer.innerHTML = '';
             data.skills.forEach(skill => {
@@ -409,7 +390,6 @@
                 skillsContainer.appendChild(div);
             });
             
-            // Восстанавливаем языки
             const langsContainer = document.getElementById('languages');
             langsContainer.innerHTML = '';
             data.languages.forEach(lang => {
@@ -420,7 +400,6 @@
                 langsContainer.appendChild(div);
             });
             
-            // Восстанавливаем опыт
             const expContainer = document.getElementById('experience');
             expContainer.innerHTML = '';
             data.experience.forEach(job => {
@@ -434,7 +413,6 @@
                 expContainer.appendChild(div);
             });
             
-            // Восстанавливаем образование
             const eduContainer = document.getElementById('education');
             eduContainer.innerHTML = '';
             data.education.forEach(edu => {
@@ -449,13 +427,11 @@
             });
         }
 
-        // === Сброс к исходным данным ===
         function resetToDefault() {
             localStorage.removeItem('resumeData');
             location.reload();
         }
 
-        // === Скачивание PDF ===
         async function downloadPDF() {
             const element = document.getElementById('resume');
             const opt = {
@@ -474,10 +450,8 @@
             }
         }
 
-        // === Инициализация ===
         loadFromLocalStorage();
         
-        // Перепривязываем wave эффект для новых элементов
         function reapplyWaveEffects() {
             const newElements = document.querySelectorAll('.section-title, .job-item, .edu-item, .skill-item, .download-btn, .reset-btn');
             newElements.forEach(el => {
@@ -488,17 +462,14 @@
             });
         }
         
-        // Наблюдатель за изменениями DOM для применения wave эффекта
+        
         const observer = new MutationObserver(() => reapplyWaveEffects());
         observer.observe(document.body, { childList: true, subtree: true });
         
-        // Кнопка сброса
         document.getElementById('resetBtn').addEventListener('click', resetToDefault);
         
-        // Кнопка скачивания
         document.getElementById('downloadBtn').addEventListener('click', downloadPDF);
         
-        // Сохраняем при любых изменениях
         document.addEventListener('blur', (e) => {
             if (e.target.getAttribute('contenteditable') === 'true') {
                 saveToLocalStorage();
