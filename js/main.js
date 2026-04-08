@@ -2,19 +2,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const editables = document.querySelectorAll('.editable');
     const downloadBtn = document.getElementById('download-btn');
 
-    // 1. Оптимизация: сохранение данных 
     editables.forEach(el => {
-        // Загрузка
         const savedValue = localStorage.getItem(el.id);
         if (savedValue) el.innerHTML = savedValue;
 
-        // Сохранение при каждом изменении
         el.addEventListener('input', () => {
             localStorage.setItem(el.id, el.innerHTML);
         });
     });
 
-    // 2. Эффект Material Wave 
     document.addEventListener('mousedown', (e) => {
         const target = e.target.closest('.ripple-element');
         if (!target) return;
@@ -32,10 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ripple.addEventListener('animationend', () => ripple.remove());
     });
 
-    // 3. Реализация кнопки "Скачать" в PDF 
     downloadBtn.addEventListener('click', () => {
-        // Используем встроенный механизм печати браузера для генерации PDF
-        // Это соответствует требованию "базовых технологий без сторонних библиотек" 
         window.print();
     });
 });
