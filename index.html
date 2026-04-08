@@ -1,13 +1,509 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite App</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="./js/main.js"></script>
-  </body>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Резюме | Material Wave Effect</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        /* Контейнер резюме */
+        .resume-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        /* Шапка резюме */
+        .resume-header {
+            background: linear-gradient(135deg, #2c3e50, #1a1a2e);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .resume-header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .resume-header .title {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .resume-header .contacts {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        /* Основное содержание */
+        .resume-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            padding: 40px;
+        }
+
+        /* Левая колонка */
+        .sidebar {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #2c3e50;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+        }
+
+        /* Правая колонка */
+        .main-content {
+            padding: 0 10px;
+        }
+
+        /* Редактируемые элементы */
+        [contenteditable="true"] {
+            outline: none;
+            padding: 5px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            cursor: text;
+        }
+
+        [contenteditable="true"]:hover {
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        [contenteditable="true"]:focus {
+            background: rgba(102, 126, 234, 0.15);
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Анимация при изменении */
+        @keyframes editPulse {
+            0% { transform: scale(1); background: rgba(102, 126, 234, 0); }
+            50% { transform: scale(1.02); background: rgba(102, 126, 234, 0.2); }
+            100% { transform: scale(1); background: rgba(102, 126, 234, 0); }
+        }
+
+        .editing-animation {
+            animation: editPulse 0.4s ease;
+        }
+
+        /* Стили для элементов резюме */
+        .job-item, .edu-item {
+            margin-bottom: 20px;
+            padding: 10px;
+            border-left: 3px solid #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .job-title, .edu-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .job-date, .edu-date {
+            color: #667eea;
+            font-size: 0.9em;
+            margin: 5px 0;
+        }
+
+        .skill-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .skill-item {
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        /* Кнопка скачивания */
+        .download-btn {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Material Wave эффект */
+        .wave-effect {
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.6);
+            transform: scale(0);
+            animation: ripple-animation 0.6s ease-out;
+            pointer-events: none;
+        }
+
+        @keyframes ripple-animation {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .resume-content {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+            
+            .resume-header {
+                padding: 20px;
+            }
+            
+            .resume-header h1 {
+                font-size: 1.8em;
+            }
+        }
+
+        /* Стиль для кнопок действий */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .action-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .reset-btn {
+            background: #dc3545;
+            color: white;
+        }
+
+        .reset-btn:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+    </style>
+    <!-- Библиотека для PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+    <div class="resume-container" id="resume">
+        <div class="resume-header">
+            <h1 contenteditable="true" id="name">Колесов Георгий</h1>
+            <div class="title" contenteditable="true" id="position">Frontend-разработчик</div>
+            <div class="contacts">
+                <span contenteditable="true" id="email">george.kolesov12@yandex.ru</span>
+                <span contenteditable="true" id="phone">+7 (913) 782-86-46</span>
+                <span contenteditable="true" id="location">Новосибирск, Россия</span>
+            </div>
+        </div>
+
+        <div class="resume-content">
+            <div class="sidebar">
+                <div class="section">
+                    <div class="section-title">Навыки</div>
+                    <div class="skill-list" id="skills">
+                        <div class="skill-item" contenteditable="true">JavaScript</div>
+                        <div class="skill-item" contenteditable="true">React</div>
+                        <div class="skill-item" contenteditable="true">HTML/CSS</div>
+                        <div class="skill-item" contenteditable="true">Node.js</div>
+                        <div class="skill-item" contenteditable="true">Git</div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Языки</div>
+                    <div class="skill-list" id="languages">
+                        <div class="skill-item" contenteditable="true">Русский (родной)</div>
+                        <div class="skill-item" contenteditable="true">English (B1)</div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Контакты</div>
+                    <div contenteditable="true" id="contact-details">
+                        GitHub: github.com/em0clown<br>
+                        Telegram: @Em0clown<br>
+                    </div>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <div class="section">
+                    <div class="section-title">Опыт работы</div>
+                    <div id="experience">
+                        <div class="job-item">
+                            <div class="job-title" contenteditable="true">Frontend-разработчик</div>
+                            <div class="job-date" contenteditable="true">2025 — настоящее время | Компания "Yadro"</div>
+                            <div contenteditable="true">Разработка SPA на React, оптимизация производительности, код-ревью</div>
+                        </div>
+                        <div class="job-item">
+                            <div class="job-title" contenteditable="true">Junior Developer</div>
+                            <div class="job-date" contenteditable="true">2020 — 2022 | Стартап "ВебСервис"</div>
+                            <div contenteditable="true">Верстка сайтов, разработка на JavaScript, работа с API</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Образование</div>
+                    <div id="education">
+                        <div class="edu-item">
+                            <div class="edu-title" contenteditable="true">CибГУТИ</div>
+                            <div class="edu-date" contenteditable="true">2025 — 2029</div>
+                            <div contenteditable="true">Факультет информационно вычислительной техники</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="action-btn reset-btn" id="resetBtn">Сбросить изменения</button>
+            <button class="download-btn" id="downloadBtn">📄 Скачать PDF</button>
+        </div>
+    </div>
+
+    <script>
+        // === Material Wave Effect ===
+        function addWaveEffect(element) {
+            element.addEventListener('click', function(e) {
+                const ripple = document.createElement('span');
+                ripple.className = 'ripple';
+                const rect = element.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+                
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = x + 'px';
+                ripple.style.top = y + 'px';
+                ripple.style.position = 'absolute';
+                
+                element.style.position = 'relative';
+                element.appendChild(ripple);
+                
+                setTimeout(() => ripple.remove(), 600);
+            });
+        }
+
+        // Добавляем wave эффект на все кликабельные элементы
+        const clickableElements = document.querySelectorAll('.section-title, .job-item, .edu-item, .skill-item, .download-btn, .reset-btn');
+        clickableElements.forEach(el => addWaveEffect(el));
+
+        // === Анимация при редактировании ===
+        const editableElements = document.querySelectorAll('[contenteditable="true"]');
+        editableElements.forEach(el => {
+            el.addEventListener('blur', function() {
+                this.classList.add('editing-animation');
+                setTimeout(() => this.classList.remove('editing-animation'), 400);
+                saveToLocalStorage();
+            });
+        });
+
+        // === Сохранение в localStorage ===
+        function saveToLocalStorage() {
+            const data = {
+                name: document.getElementById('name').innerHTML,
+                position: document.getElementById('position').innerHTML,
+                email: document.getElementById('email').innerHTML,
+                phone: document.getElementById('phone').innerHTML,
+                location: document.getElementById('location').innerHTML,
+                contactDetails: document.getElementById('contact-details').innerHTML,
+                skills: Array.from(document.querySelectorAll('#skills .skill-item')).map(el => el.innerHTML),
+                languages: Array.from(document.querySelectorAll('#languages .skill-item')).map(el => el.innerHTML),
+                experience: Array.from(document.querySelectorAll('#experience .job-item')).map(job => ({
+                    title: job.querySelector('.job-title').innerHTML,
+                    date: job.querySelector('.job-date').innerHTML,
+                    desc: job.children[2].innerHTML
+                })),
+                education: Array.from(document.querySelectorAll('#education .edu-item')).map(edu => ({
+                    title: edu.querySelector('.edu-title').innerHTML,
+                    date: edu.querySelector('.edu-date').innerHTML,
+                    desc: edu.children[2].innerHTML
+                }))
+            };
+            localStorage.setItem('resumeData', JSON.stringify(data));
+        }
+
+        // === Загрузка из localStorage ===
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('resumeData');
+            if (!saved) return;
+            
+            const data = JSON.parse(saved);
+            document.getElementById('name').innerHTML = data.name;
+            document.getElementById('position').innerHTML = data.position;
+            document.getElementById('email').innerHTML = data.email;
+            document.getElementById('phone').innerHTML = data.phone;
+            document.getElementById('location').innerHTML = data.location;
+            document.getElementById('contact-details').innerHTML = data.contactDetails;
+            
+            // Восстанавливаем навыки
+            const skillsContainer = document.getElementById('skills');
+            skillsContainer.innerHTML = '';
+            data.skills.forEach(skill => {
+                const div = document.createElement('div');
+                div.className = 'skill-item';
+                div.setAttribute('contenteditable', 'true');
+                div.innerHTML = skill;
+                skillsContainer.appendChild(div);
+            });
+            
+            // Восстанавливаем языки
+            const langsContainer = document.getElementById('languages');
+            langsContainer.innerHTML = '';
+            data.languages.forEach(lang => {
+                const div = document.createElement('div');
+                div.className = 'skill-item';
+                div.setAttribute('contenteditable', 'true');
+                div.innerHTML = lang;
+                langsContainer.appendChild(div);
+            });
+            
+            // Восстанавливаем опыт
+            const expContainer = document.getElementById('experience');
+            expContainer.innerHTML = '';
+            data.experience.forEach(job => {
+                const div = document.createElement('div');
+                div.className = 'job-item';
+                div.innerHTML = `
+                    <div class="job-title" contenteditable="true">${job.title}</div>
+                    <div class="job-date" contenteditable="true">${job.date}</div>
+                    <div contenteditable="true">${job.desc}</div>
+                `;
+                expContainer.appendChild(div);
+            });
+            
+            // Восстанавливаем образование
+            const eduContainer = document.getElementById('education');
+            eduContainer.innerHTML = '';
+            data.education.forEach(edu => {
+                const div = document.createElement('div');
+                div.className = 'edu-item';
+                div.innerHTML = `
+                    <div class="edu-title" contenteditable="true">${edu.title}</div>
+                    <div class="edu-date" contenteditable="true">${edu.date}</div>
+                    <div contenteditable="true">${edu.desc}</div>
+                `;
+                eduContainer.appendChild(div);
+            });
+        }
+
+        // === Сброс к исходным данным ===
+        function resetToDefault() {
+            localStorage.removeItem('resumeData');
+            location.reload();
+        }
+
+        // === Скачивание PDF ===
+        async function downloadPDF() {
+            const element = document.getElementById('resume');
+            const opt = {
+                margin: [0.5, 0.5, 0.5, 0.5],
+                filename: 'resume.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, logging: false },
+                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+            };
+            
+            try {
+                await html2pdf().set(opt).from(element).save();
+            } catch (error) {
+                console.error('PDF generation error:', error);
+                alert('Ошибка при создании PDF. Попробуйте использовать печать браузера (Ctrl+P)');
+            }
+        }
+
+        // === Инициализация ===
+        loadFromLocalStorage();
+        
+        // Перепривязываем wave эффект для новых элементов
+        function reapplyWaveEffects() {
+            const newElements = document.querySelectorAll('.section-title, .job-item, .edu-item, .skill-item, .download-btn, .reset-btn');
+            newElements.forEach(el => {
+                if (!el.hasWaveEffect) {
+                    addWaveEffect(el);
+                    el.hasWaveEffect = true;
+                }
+            });
+        }
+        
+        // Наблюдатель за изменениями DOM для применения wave эффекта
+        const observer = new MutationObserver(() => reapplyWaveEffects());
+        observer.observe(document.body, { childList: true, subtree: true });
+        
+        // Кнопка сброса
+        document.getElementById('resetBtn').addEventListener('click', resetToDefault);
+        
+        // Кнопка скачивания
+        document.getElementById('downloadBtn').addEventListener('click', downloadPDF);
+        
+        // Сохраняем при любых изменениях
+        document.addEventListener('blur', (e) => {
+            if (e.target.getAttribute('contenteditable') === 'true') {
+                saveToLocalStorage();
+            }
+        }, true);
+    </script>
+</body>
 </html>
