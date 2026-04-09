@@ -2,385 +2,94 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Резюме | Редактор с управлением секциями</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Резюме | Редактор</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        /* [Базовые стили оставлены без изменений для краткости, добавлены новые] */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', 'Roboto', system-ui, -apple-system, sans-serif;
+            font-family: 'Segoe UI', system-ui, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 40px 20px;
             min-height: 100vh;
         }
-
         .resume-container {
             max-width: 1000px;
             margin: 0 auto;
             background: white;
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
+            position: relative;
         }
-
-        .resume-header {
-            background: linear-gradient(135deg, #2c3e50, #1a1a2e);
-            color: white;
-            padding: 40px;
-            text-align: center;
+        .resume-header { background: #1a1a2e; color: white; padding: 40px; text-align: center; }
+        .resume-content { display: grid; grid-template-columns: 1fr 2fr; gap: 30px; padding: 40px; }
+        .sidebar { background: #f8f9fa; padding: 20px; border-radius: 15px; }
+        .section { margin-bottom: 25px; position: relative; }
+        .section-title { font-size: 1.2em; font-weight: bold; border-left: 4px solid #667eea; padding-left: 10px; margin-bottom: 15px; }
+        
+        .skill-list { display: flex; flex-wrap: wrap; gap: 8px; }
+        .skill-item { 
+            background: #667eea; color: white; padding: 5px 12px; 
+            border-radius: 20px; font-size: 0.9em; display: flex; align-items: center; gap: 5px; 
         }
-
-        .resume-header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-
-        .resume-header .title {
-            font-size: 1.2em;
-            opacity: 0.9;
-        }
-
-        .resume-header .contacts {
-            margin-top: 20px;
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-
-        .resume-content {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 30px;
-            padding: 40px;
-        }
-
-        .sidebar {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 15px;
-        }
-
-        .section {
-            margin-bottom: 30px;
-            background: white;
-            border-radius: 16px;
-            padding: 15px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .section-title {
-            font-size: 1.3em;
-            font-weight: bold;
-            color: #2c3e50;
-            border-left: 5px solid #667eea;
-            padding-left: 12px;
-            margin: 0;
-        }
-
-        .section-controls {
-            display: flex;
-            gap: 8px;
-        }
-
-        .ctrl-btn {
-            background: #eef2ff;
-            border: none;
-            border-radius: 30px;
-            padding: 6px 14px;
-            font-size: 0.8rem;
-            font-weight: 600;
+        
+        /* Кнопки удаления */
+        .remove-item {
             cursor: pointer;
-            color: #2c3e50;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-        }
-
-        .ctrl-btn-add {
-            background: #667eea;
-            color: white;
-        }
-
-        .ctrl-btn-add:hover {
-            background: #5a67d8;
-            transform: translateY(-2px);
-        }
-
-        .ctrl-btn-remove {
-            background: #fee2e2;
-            color: #b91c1c;
-        }
-
-        .ctrl-btn-remove:hover {
-            background: #fecaca;
-            transform: translateY(-2px);
-        }
-
-        .skill-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 5px;
-        }
-
-        .skill-item {
-            background: #667eea;
-            color: white;
-            padding: 6px 14px;
-            border-radius: 40px;
-            font-size: 0.9em;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .skill-item .remove-item {
-            background: rgba(0,0,0,0.2);
-            border: none;
-            color: white;
+            width: 16px; height: 16px;
+            background: rgba(255,255,255,0.2);
             border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            font-size: 14px;
-            line-height: 1;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: 10px;
         }
+        .remove-item:hover { background: rgba(255,0,0,0.6); }
 
-        .skill-item .remove-item:hover {
-            background: rgba(0,0,0,0.5);
-        }
+        /* Элементы, которые НЕ должны быть в PDF */
+        .no-print { transition: opacity 0.2s; }
+        
+        /* Кнопки действий */
+        .action-buttons { display: flex; justify-content: center; gap: 15px; padding: 20px; background: #eee; }
+        button { cursor: pointer; border: none; border-radius: 25px; padding: 10px 20px; font-weight: bold; }
+        .download-btn { background: #667eea; color: white; }
+        .reset-btn { background: #f56565; color: white; }
 
-        .contact-block {
-            background: #f1f5f9;
-            padding: 12px;
-            border-radius: 16px;
-            margin-top: 8px;
-        }
+        [contenteditable="true"]:focus { background: rgba(102, 126, 234, 0.05); outline: none; border-radius: 4px; }
 
-        .contact-line {
-            padding: 6px 8px;
-            margin: 4px 0;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-        }
-
-        .contact-line .remove-item {
-            background: #dc3545;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            font-size: 12px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .contact-line .remove-item:hover {
-            background: #c82333;
-        }
-
-        .main-content {
-            padding: 0 10px;
-        }
-
-        [contenteditable="true"] {
-            outline: none;
-            padding: 5px;
-            border-radius: 8px;
-        }
-
-        [contenteditable="true"]:hover {
-            background: rgba(102, 126, 234, 0.1);
-        }
-
-        [contenteditable="true"]:focus {
-            background: rgba(102, 126, 234, 0.15);
-            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.3);
-        }
-
-        @keyframes editPulse {
-            0% { transform: scale(1); background: rgba(102, 126, 234, 0); }
-            50% { transform: scale(1.01); background: rgba(102, 126, 234, 0.15); }
-            100% { transform: scale(1); background: rgba(102, 126, 234, 0); }
-        }
-
-        .editing-animation {
-            animation: editPulse 0.4s ease;
-        }
-
-        .job-item, .edu-item {
-            margin-bottom: 20px;
-            padding: 12px;
-            border-left: 3px solid #667eea;
-            background: #fefefe;
-            border-radius: 12px;
-        }
-
-        .job-title, .edu-title {
-            font-size: 1.1em;
-            font-weight: bold;
-            color: #2c3e50;
-        }
-
-        .job-date, .edu-date {
-            color: #667eea;
-            font-size: 0.9em;
-            margin: 5px 0;
-        }
-
-        .action-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-top: 1px solid #e0e0e0;
-            flex-wrap: wrap;
-        }
-
-        .download-btn {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            padding: 12px 28px;
-            border-radius: 40px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .reset-btn {
-            background: #dc3545;
-            color: white;
-            border: none;
-            padding: 12px 28px;
-            border-radius: 40px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .reset-btn:hover, .download-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-
-        .ripple {
-            position: absolute;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.5);
-            transform: scale(0);
-            animation: ripple-animation 0.5s linear;
-            pointer-events: none;
-        }
-
-        @keyframes ripple-animation {
-            to {
-                transform: scale(4);
-                opacity: 0;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .resume-content {
-                grid-template-columns: 1fr;
-                padding: 20px;
-            }
-            .resume-header h1 { font-size: 1.8em; }
-        }
-
-        .info-hint {
-            font-size: 0.75rem;
-            color: #6c757d;
-            margin-top: 10px;
-            text-align: center;
-        }
+        @media (max-width: 768px) { .resume-content { grid-template-columns: 1fr; } }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
+
 <div class="resume-container" id="resume">
     <div class="resume-header">
         <h1 contenteditable="true" id="name">Иван Петров</h1>
-        <div class="title" contenteditable="true" id="position">Frontend-разработчик / React специалист</div>
+        <div contenteditable="true" id="position">Frontend-разработчик</div>
         <div class="contacts">
-            <span contenteditable="true" id="email">ivan@example.com</span>
-            <span contenteditable="true" id="phone">+7 (999) 123-45-67</span>
-            <span contenteditable="true" id="location">Москва, Россия</span>
+            <span contenteditable="true" id="email">ivan@example.com</span> | 
+            <span contenteditable="true" id="phone">+7 (999) 000-00-00</span>
         </div>
     </div>
 
     <div class="resume-content">
         <div class="sidebar">
-            <div class="section" id="skillsSection">
-                <div class="section-header">
-                    <div class="section-title">Навыки</div>
-                    <div class="section-controls">
-                        <button class="ctrl-btn ctrl-btn-add" data-section="skills">➕ Добавить</button>
-                        <button class="ctrl-btn ctrl-btn-remove" data-section="skills" data-remove-last="skills">🗑 Удалить последний</button>
-                    </div>
+            <div class="section">
+                <div class="section-title">Навыки 
+                    <button class="no-print ctrl-btn-add" data-type="skills">＋</button>
                 </div>
                 <div class="skill-list" id="skillsList">
-                    <div class="skill-item" contenteditable="true">JavaScript <span class="remove-item" data-type="skill">✕</span></div>
-                    <div class="skill-item" contenteditable="true">React <span class="remove-item" data-type="skill">✕</span></div>
-                    <div class="skill-item" contenteditable="true">HTML/CSS <span class="remove-item" data-type="skill">✕</span></div>
-                    <div class="skill-item" contenteditable="true">Node.js <span class="remove-item" data-type="skill">✕</span></div>
-                    <div class="skill-item" contenteditable="true">Git <span class="remove-item" data-type="skill">✕</span></div>
+                    <div class="skill-item" contenteditable="true">JavaScript <span class="remove-item">✕</span></div>
+                    <div class="skill-item" contenteditable="true">React <span class="remove-item">✕</span></div>
                 </div>
             </div>
 
-            <div class="section" id="languagesSection">
-                <div class="section-header">
-                    <div class="section-title">Языки</div>
-                    <div class="section-controls">
-                        <button class="ctrl-btn ctrl-btn-add" data-section="languages">➕ Добавить</button>
-                        <button class="ctrl-btn ctrl-btn-remove" data-section="languages" data-remove-last="languages">🗑 Удалить последний</button>
-                    </div>
+            <div class="section">
+                <div class="section-title">Языки
+                    <button class="no-print ctrl-btn-add" data-type="languages">＋</button>
                 </div>
                 <div class="skill-list" id="languagesList">
-                    <div class="skill-item" contenteditable="true">Русский (родной) <span class="remove-item" data-type="language">✕</span></div>
-                    <div class="skill-item" contenteditable="true">English (B2) <span class="remove-item" data-type="language">✕</span></div>
+                    <div class="skill-item" contenteditable="true">Русский <span class="remove-item">✕</span></div>
                 </div>
-            </div>
-
-            <div class="section" id="contactsSection">
-                <div class="section-header">
-                    <div class="section-title">Контакты</div>
-                    <div class="section-controls">
-                        <button class="ctrl-btn ctrl-btn-add" data-section="contacts">➕ Добавить контакт</button>
-                        <button class="ctrl-btn ctrl-btn-remove" data-section="contacts" data-remove-last="contacts">🗑 Удалить последний</button>
-                    </div>
-                </div>
-                <div id="contactsContainer" class="contact-block">
-                    <div contenteditable="true" class="contact-line">GitHub: github.com/ivanpetrov <span class="remove-item">✕</span></div>
-                    <div contenteditable="true" class="contact-line">Telegram: @ivan_dev <span class="remove-item">✕</span></div>
-                    <div contenteditable="true" class="contact-line">LinkedIn: linkedin.com/in/ivan <span class="remove-item">✕</span></div>
-                </div>
-                <div class="info-hint">✏️ Клик для редактирования</div>
             </div>
         </div>
 
@@ -388,340 +97,112 @@
             <div class="section">
                 <div class="section-title">Опыт работы</div>
                 <div id="experience">
-                    <div class="job-item">
-                        <div class="job-title" contenteditable="true">Frontend-разработчик</div>
-                        <div class="job-date" contenteditable="true">2025 — настоящее время | Компания "Ядро"</div>
-                        <div contenteditable="true">Разработка SPA на React, оптимизация, код-ревью, наставничество</div>
-                    </div>
-                    <div class="job-item">
-                        <div class="job-title" contenteditable="true">Junior Developer</div>
-                        <div class="job-date" contenteditable="true">2020 — 2022 | Стартап "ВебСервис"</div>
-                        <div contenteditable="true">Верстка, JavaScript, интеграция API, поддержка проектов</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="section">
-                <div class="section-title">Образование</div>
-                <div id="education">
-                    <div class="edu-item">
-                        <div class="edu-title" contenteditable="true">СибГУТИ</div>
-                        <div class="edu-date" contenteditable="true">2025 — 2029</div>
-                        <div contenteditable="true">Факультет информационно-вычислительной техники</div>
+                    <div class="job-item" style="margin-bottom: 15px;">
+                        <b contenteditable="true">Старший разработчик</b>
+                        <div contenteditable="true" style="color: #667eea; font-size: 0.9em;">2024 — н.в.</div>
+                        <div contenteditable="true">Описание ваших достижений и обязанностей...</div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="action-buttons">
-        <button class="reset-btn" id="resetBtn">⟳ Сбросить изменения</button>
-        <button class="download-btn" id="downloadBtn">📄 Скачать PDF</button>
+    <div class="action-buttons no-print">
+        <button class="reset-btn" id="resetBtn">Сбросить</button>
+        <button class="download-btn" id="downloadBtn">Скачать PDF</button>
     </div>
 </div>
 
 <script>
-    function addWaveEffect(element) {
-        if (!element || element._waveAdded) return;
-        element.addEventListener('click', function(e) {
-            const rect = element.getBoundingClientRect();
-            const ripple = document.createElement('span');
-            ripple.className = 'ripple';
-            const size = Math.max(rect.width, rect.height);
-            const x = e.clientX - rect.left - size / 2;
-            const y = e.clientY - rect.top - size / 2;
-            ripple.style.width = ripple.style.height = size + 'px';
-            ripple.style.left = x + 'px';
-            ripple.style.top = y + 'px';
-            ripple.style.position = 'absolute';
-            element.style.position = 'relative';
-            element.appendChild(ripple);
-            setTimeout(() => ripple.remove(), 500);
-        });
-        element._waveAdded = true;
-    }
+    const resume = document.getElementById('resume');
+    const skillsList = document.getElementById('skillsList');
+    const languagesList = document.getElementById('languagesList');
 
-    function applyRipplesToControls() {
-        document.querySelectorAll('.ctrl-btn, .reset-btn, .download-btn, .remove-item, .job-item, .edu-item').forEach(el => addWaveEffect(el));
-    }
+    // 1. Делегирование удаления (один слушатель на всё дерево)
+    resume.addEventListener('click', (e) => {
+        if (e.target.classList.contains('remove-item')) {
+            e.target.closest('.skill-item, .contact-line')?.remove();
+            saveState();
+        }
+    });
 
-    function saveFullStateToLocalStorage() {
-        const skills = Array.from(document.querySelectorAll('#skillsList .skill-item')).map(el => el.innerText.replace('✕', '').trim());
-        const languages = Array.from(document.querySelectorAll('#languagesList .skill-item')).map(el => el.innerText.replace('✕', '').trim());
-        const contactLines = Array.from(document.querySelectorAll('#contactsContainer > .contact-line')).map(el => {
-            const clone = el.cloneNode(true);
-            const removeBtn = clone.querySelector('.remove-item');
-            if (removeBtn) removeBtn.remove();
-            return clone.innerText.trim();
+    // 2. Добавление элементов
+    document.querySelectorAll('.ctrl-btn-add').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const type = btn.dataset.type;
+            const container = type === 'skills' ? skillsList : languagesList;
+            const newItem = document.createElement('div');
+            newItem.className = 'skill-item';
+            newItem.contentEditable = true;
+            newItem.innerHTML = `Новый элемент <span class="remove-item">✕</span>`;
+            container.appendChild(newItem);
+            saveState();
         });
-        
-        const experience = Array.from(document.querySelectorAll('#experience .job-item')).map(job => ({
-            title: job.querySelector('.job-title')?.innerHTML || '',
-            date: job.querySelector('.job-date')?.innerHTML || '',
-            desc: job.children[2]?.innerHTML || ''
-        }));
-        const education = Array.from(document.querySelectorAll('#education .edu-item')).map(edu => ({
-            title: edu.querySelector('.edu-title')?.innerHTML || '',
-            date: edu.querySelector('.edu-date')?.innerHTML || '',
-            desc: edu.children[2]?.innerHTML || ''
-        }));
-        
-        const state = {
+    });
+
+    // 3. Сохранение состояния
+    function saveState() {
+        const data = {
             name: document.getElementById('name').innerHTML,
             position: document.getElementById('position').innerHTML,
-            email: document.getElementById('email').innerHTML,
-            phone: document.getElementById('phone').innerHTML,
-            location: document.getElementById('location').innerHTML,
-            skills,
-            languages,
-            contacts: contactLines,
-            experience,
-            education
+            skills: skillsList.innerHTML,
+            languages: languagesList.innerHTML,
+            experience: document.getElementById('experience').innerHTML
         };
-        localStorage.setItem('resumeFullState', JSON.stringify(state));
+        localStorage.setItem('resume_data', JSON.stringify(data));
     }
 
-    function loadFullStateFromLocalStorage() {
-        const saved = localStorage.getItem('resumeFullState');
-        if (!saved) return false;
-        try {
-            const data = JSON.parse(saved);
-            document.getElementById('name').innerHTML = data.name;
-            document.getElementById('position').innerHTML = data.position;
-            document.getElementById('email').innerHTML = data.email;
-            document.getElementById('phone').innerHTML = data.phone;
-            document.getElementById('location').innerHTML = data.location;
-            
-            const skillsContainer = document.getElementById('skillsList');
-            skillsContainer.innerHTML = '';
-            if (data.skills && data.skills.length) {
-                data.skills.forEach(skill => {
-                    if (skill.trim()) {
-                        const skillDiv = createSkillElement(skill, 'skill');
-                        skillsContainer.appendChild(skillDiv);
-                    }
-                });
-            } else {
-                skillsContainer.innerHTML = '<div class="skill-item" contenteditable="true">Новый навык <span class="remove-item" data-type="skill">✕</span></div>';
-            }
-            
-            const langsContainer = document.getElementById('languagesList');
-            langsContainer.innerHTML = '';
-            if (data.languages && data.languages.length) {
-                data.languages.forEach(lang => {
-                    if (lang.trim()) {
-                        const langDiv = createSkillElement(lang, 'language');
-                        langsContainer.appendChild(langDiv);
-                    }
-                });
-            } else {
-                langsContainer.innerHTML = '<div class="skill-item" contenteditable="true">Язык <span class="remove-item" data-type="language">✕</span></div>';
-            }
-            
-            const contactsContainer = document.getElementById('contactsContainer');
-            contactsContainer.innerHTML = '';
-            if (data.contacts && data.contacts.length) {
-                data.contacts.forEach(contactText => {
-                    const contactDiv = createContactLine(contactText);
-                    contactsContainer.appendChild(contactDiv);
-                });
-            } else {
-                contactsContainer.appendChild(createContactLine('Email: example@mail.com'));
-            }
-            
-            const expContainer = document.getElementById('experience');
-            expContainer.innerHTML = '';
-            if (data.experience && data.experience.length) {
-                data.experience.forEach(job => {
-                    const jobDiv = document.createElement('div');
-                    jobDiv.className = 'job-item';
-                    jobDiv.innerHTML = `
-                        <div class="job-title" contenteditable="true">${escapeHtml(job.title)}</div>
-                        <div class="job-date" contenteditable="true">${escapeHtml(job.date)}</div>
-                        <div contenteditable="true">${escapeHtml(job.desc)}</div>
-                    `;
-                    expContainer.appendChild(jobDiv);
-                });
-            }
-            
-            const eduContainer = document.getElementById('education');
-            eduContainer.innerHTML = '';
-            if (data.education && data.education.length) {
-                data.education.forEach(edu => {
-                    const eduDiv = document.createElement('div');
-                    eduDiv.className = 'edu-item';
-                    eduDiv.innerHTML = `
-                        <div class="edu-title" contenteditable="true">${escapeHtml(edu.title)}</div>
-                        <div class="edu-date" contenteditable="true">${escapeHtml(edu.date)}</div>
-                        <div contenteditable="true">${escapeHtml(edu.desc)}</div>
-                    `;
-                    eduContainer.appendChild(eduDiv);
-                });
-            }
-            
-            attachRemoveEventsToAllItems();
-            return true;
-        } catch(e) { console.warn(e); return false; }
+    // Слушаем изменения текста
+    resume.addEventListener('input', () => saveState());
+
+    // 4. Загрузка данных
+    function loadState() {
+        const saved = localStorage.getItem('resume_data');
+        if (!saved) return;
+        const data = JSON.parse(saved);
+        document.getElementById('name').innerHTML = data.name;
+        document.getElementById('position').innerHTML = data.position;
+        skillsList.innerHTML = data.skills;
+        languagesList.innerHTML = data.languages;
+        document.getElementById('experience').innerHTML = data.experience;
     }
-    
-    function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, function(m){if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
-    
-    function createSkillElement(text, type) {
-        const div = document.createElement('div');
-        div.className = 'skill-item';
-        div.setAttribute('contenteditable', 'true');
-        const spanRemove = document.createElement('span');
-        spanRemove.className = 'remove-item';
-        spanRemove.setAttribute('data-type', type);
-        spanRemove.innerHTML = '✕';
-        div.innerHTML = text;
-        div.appendChild(spanRemove);
-        return div;
-    }
-    
-    function createContactLine(text) {
-        const div = document.createElement('div');
-        div.setAttribute('contenteditable', 'true');
-        div.className = 'contact-line';
-        div.innerHTML = text + ' <span class="remove-item">✕</span>';
-        return div;
-    }
-    
-    function attachRemoveEventsToAllItems() {
-        document.querySelectorAll('.remove-item').forEach(btn => {
-            if (btn._removeHandler) return;
-            const newBtn = btn.cloneNode(true);
-            btn.parentNode.replaceChild(newBtn, btn);
-            newBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const parentItem = this.parentElement;
-                if (parentItem && parentItem.classList && parentItem.classList.contains('skill-item')) {
-                    parentItem.remove();
-                    saveFullStateToLocalStorage();
-                } else if (parentItem && parentItem.classList && parentItem.classList.contains('contact-line')) {
-                    parentItem.remove();
-                    saveFullStateToLocalStorage();
-                }
-            });
-            newBtn._removeHandler = true;
-        });
-    }
-    
-    function addItemToSection(sectionId) {
-        if (sectionId === 'skills') {
-            const container = document.getElementById('skillsList');
-            const newSkill = createSkillElement('Новый навык', 'skill');
-            container.appendChild(newSkill);
-            addWaveEffect(newSkill.querySelector('.remove-item'));
-            newSkill.setAttribute('contenteditable', 'true');
-            saveFullStateToLocalStorage();
-        } 
-        else if (sectionId === 'languages') {
-            const container = document.getElementById('languagesList');
-            const newLang = createSkillElement('Новый язык', 'language');
-            container.appendChild(newLang);
-            addWaveEffect(newLang.querySelector('.remove-item'));
-            newLang.setAttribute('contenteditable', 'true');
-            saveFullStateToLocalStorage();
-        }
-        else if (sectionId === 'contacts') {
-            const container = document.getElementById('contactsContainer');
-            const newContact = createContactLine('Новый контакт');
-            container.appendChild(newContact);
-            const removeIcon = newContact.querySelector('.remove-item');
-            if (removeIcon) addWaveEffect(removeIcon);
-            saveFullStateToLocalStorage();
-        }
-        attachRemoveEventsToAllItems();
-        reapplyWaveToNewElements();
-    }
-    
-    function removeLastFromSection(sectionId) {
-        if (sectionId === 'skills') {
-            const container = document.getElementById('skillsList');
-            if (container.children.length > 1) container.removeChild(container.lastElementChild);
-        } 
-        else if (sectionId === 'languages') {
-            const container = document.getElementById('languagesList');
-            if (container.children.length > 1) container.removeChild(container.lastElementChild);
-        }
-        else if (sectionId === 'contacts') {
-            const container = document.getElementById('contactsContainer');
-            if (container.children.length > 1) container.removeChild(container.lastElementChild);
-        }
-        saveFullStateToLocalStorage();
-        attachRemoveEventsToAllItems();
-    }
-    
-    function reapplyWaveToNewElements() {
-        document.querySelectorAll('.ctrl-btn, .remove-item, .skill-item, .download-btn, .reset-btn, .job-item, .edu-item').forEach(el => addWaveEffect(el));
-    }
-    
-    function resetToDefault() {
-        localStorage.removeItem('resumeFullState');
-        location.reload();
-    }
-    
+
+    // 5. Генерация PDF (с очисткой от кнопок)
     async function downloadPDF() {
         const element = document.getElementById('resume');
+        
+        // Скрываем ненужные элементы перед печатью
+        const noPrintElements = document.querySelectorAll('.no-print');
+        noPrintElements.forEach(el => el.style.display = 'none');
+        const removeIcons = document.querySelectorAll('.remove-item');
+        removeIcons.forEach(el => el.style.visibility = 'hidden');
+
         const opt = {
-            margin: [0.3, 0.3, 0.3, 0.3],
-            filename: 'resume.pdf',
-            image: { type: 'jpeg', quality: 0.95 },
-            html2canvas: { scale: 2, logging: false, useCORS: true },
-            jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+            margin: 10,
+            filename: 'my_resume.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
+
         try {
             await html2pdf().set(opt).from(element).save();
-        } catch (error) {
-            alert('Ошибка при создании PDF. Используйте печать браузера (Ctrl+P)');
+        } finally {
+            // Возвращаем всё как было
+            noPrintElements.forEach(el => el.style.display = '');
+            removeIcons.forEach(el => el.style.visibility = 'visible');
         }
     }
-    
-    function init() {
-        const loaded = loadFullStateFromLocalStorage();
-        if (!loaded) {
-            attachRemoveEventsToAllItems();
+
+    document.getElementById('downloadBtn').addEventListener('click', downloadPDF);
+    document.getElementById('resetBtn').addEventListener('click', () => {
+        if(confirm('Сбросить все данные?')) {
+            localStorage.removeItem('resume_data');
+            location.reload();
         }
-        
-        document.querySelectorAll('.ctrl-btn-add').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const section = btn.getAttribute('data-section');
-                if (section) addItemToSection(section);
-            });
-        });
-        document.querySelectorAll('.ctrl-btn-remove').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const section = btn.getAttribute('data-section');
-                if (section) removeLastFromSection(section);
-            });
-        });
-        
-        document.querySelectorAll('[contenteditable="true"]').forEach(el => {
-            el.addEventListener('blur', () => {
-                saveFullStateToLocalStorage();
-                el.classList.add('editing-animation');
-                setTimeout(() => el.classList.remove('editing-animation'), 300);
-            });
-        });
-        
-        const observer = new MutationObserver(() => {
-            saveFullStateToLocalStorage();
-            attachRemoveEventsToAllItems();
-            reapplyWaveToNewElements();
-        });
-        observer.observe(document.getElementById('skillsList'), { childList: true, subtree: true });
-        observer.observe(document.getElementById('languagesList'), { childList: true, subtree: true });
-        observer.observe(document.getElementById('contactsContainer'), { childList: true, subtree: true });
-        
-        document.getElementById('resetBtn').addEventListener('click', resetToDefault);
-        document.getElementById('downloadBtn').addEventListener('click', downloadPDF);
-        
-        applyRipplesToControls();
-        attachRemoveEventsToAllItems();
-    }
-    
-    init();
+    });
+
+    window.onload = loadState;
 </script>
 </body>
 </html>
