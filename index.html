@@ -2,8 +2,8 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Резюме | Material Wave Effect</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Резюме | Редактор с управлением секциями</title>
     <style>
         * {
             margin: 0;
@@ -67,16 +67,124 @@
         }
 
         .section {
-            margin-bottom: 25px;
+            margin-bottom: 30px;
+            background: white;
+            border-radius: 16px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: all 0.2s;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .section-title {
             font-size: 1.3em;
             font-weight: bold;
             color: #2c3e50;
-            border-bottom: 3px solid #667eea;
-            padding-bottom: 8px;
-            margin-bottom: 15px;
+            border-left: 5px solid #667eea;
+            padding-left: 12px;
+            margin: 0;
+        }
+
+        .section-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .ctrl-btn {
+            background: #eef2ff;
+            border: none;
+            border-radius: 30px;
+            padding: 6px 14px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #2c3e50;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .ctrl-btn-add {
+            background: #667eea;
+            color: white;
+        }
+
+        .ctrl-btn-add:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .ctrl-btn-remove {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .ctrl-btn-remove:hover {
+            background: #fecaca;
+            transform: translateY(-2px);
+        }
+
+        .ctrl-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .skill-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .skill-item {
+            background: #667eea;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 0.9em;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .skill-item .remove-item {
+            background: rgba(0,0,0,0.2);
+            border: none;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 14px;
+            line-height: 1;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .skill-item .remove-item:hover {
+            background: rgba(0,0,0,0.5);
+        }
+
+        .contact-block {
+            background: #f1f5f9;
+            padding: 12px;
+            border-radius: 16px;
+            margin-top: 8px;
         }
 
         .main-content {
@@ -102,7 +210,7 @@
 
         @keyframes editPulse {
             0% { transform: scale(1); background: rgba(102, 126, 234, 0); }
-            50% { transform: scale(1.02); background: rgba(102, 126, 234, 0.2); }
+            50% { transform: scale(1.01); background: rgba(102, 126, 234, 0.15); }
             100% { transform: scale(1); background: rgba(102, 126, 234, 0); }
         }
 
@@ -112,9 +220,11 @@
 
         .job-item, .edu-item {
             margin-bottom: 20px;
-            padding: 10px;
+            padding: 12px;
             border-left: 3px solid #667eea;
             transition: all 0.3s ease;
+            background: #fefefe;
+            border-radius: 12px;
         }
 
         .job-title, .edu-title {
@@ -129,53 +239,51 @@
             margin: 5px 0;
         }
 
-        .skill-list {
+        .action-buttons {
             display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
             flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .skill-item {
-            background: #667eea;
-            color: white;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.9em;
         }
 
         .download-btn {
-            display: block;
-            width: 200px;
-            margin: 20px auto;
-            padding: 12px 30px;
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             border: none;
-            border-radius: 50px;
-            font-size: 1.1em;
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-size: 1rem;
             font-weight: bold;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            position: relative;
-            overflow: hidden;
+            transition: 0.2s;
         }
 
-        .download-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
-        }
-        .wave-effect {
-            position: relative;
-            overflow: hidden;
+        .reset-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-size: 1rem;
+            font-weight: bold;
             cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .reset-btn:hover, .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
 
         .ripple {
             position: absolute;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.5);
             transform: scale(0);
-            animation: ripple-animation 0.6s ease-out;
+            animation: ripple-animation 0.5s linear;
             pointer-events: none;
         }
 
@@ -191,290 +299,438 @@
                 grid-template-columns: 1fr;
                 padding: 20px;
             }
-            
-            .resume-header {
-                padding: 20px;
-            }
-            
-            .resume-header h1 {
-                font-size: 1.8em;
-            }
+            .resume-header h1 { font-size: 1.8em; }
         }
 
-        .action-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-top: 1px solid #e0e0e0;
-        }
-
-        .action-btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: all 0.3s ease;
-        }
-
-        .reset-btn {
-            background: #dc3545;
-            color: white;
-        }
-
-        .reset-btn:hover {
-            background: #c82333;
-            transform: translateY(-2px);
+        .info-hint {
+            font-size: 0.75rem;
+            color: #6c757d;
+            margin-top: 10px;
+            text-align: center;
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
-    <div class="resume-container" id="resume">
-        <div class="resume-header">
-            <h1 contenteditable="true" id="name"ФИО</h1>
-            <div class="title" contenteditable="true" id="position">Должность/вид разрботки</div>
-            <div class="contacts">
-                <span contenteditable="true" id="email">электронная почта</span>
-                <span contenteditable="true" id="phone">номер телефона</span>
-                <span contenteditable="true" id="location">Место проживания (Страна, город)</span>
-            </div>
-        </div>
-
-        <div class="resume-content">
-            <div class="sidebar">
-                <div class="section">
-                    <div class="section-title">Навыки</div>
-                    <div class="skill-list" id="skills">
-                        <div class="skill-item" contenteditable="true">JavaScript</div>
-                        <div class="skill-item" contenteditable="true">React</div>
-                        <div class="skill-item" contenteditable="true">HTML/CSS</div>
-                        <div class="skill-item" contenteditable="true">Node.js</div>
-                        <div class="skill-item" contenteditable="true">Git</div>
-                    </div>
-                </div>
-
-                <div class="section">
-                    <div class="section-title">Языки</div>
-                    <div class="skill-list" id="languages">
-                        <div class="skill-item" contenteditable="true">Русский (родной)</div>
-                        <div class="skill-item" contenteditable="true">English (B1)</div>
-                    </div>
-                </div>
-
-                <div class="section">
-                    <div class="section-title">Контакты</div>
-                    <div contenteditable="true" id="contact-details">
-                        GitHub: github.com/em0clown<br>
-                        Telegram: @Em0clown<br>
-                    </div>
-                </div>
-            </div>
-
-            <div class="main-content">
-                <div class="section">
-                    <div class="section-title">Опыт работы</div>
-                    <div id="experience">
-                        <div class="job-item">
-                            <div class="job-title" contenteditable="true">Frontend-разработчик</div>
-                            <div class="job-date" contenteditable="true">2025 — настоящее время | Компания "Yadro"</div>
-                            <div contenteditable="true">Разработка SPA на React, оптимизация производительности, код-ревью</div>
-                        </div>
-                        <div class="job-item">
-                            <div class="job-title" contenteditable="true">Junior Developer</div>
-                            <div class="job-date" contenteditable="true">2020 — 2022 | Стартап "ВебСервис"</div>
-                            <div contenteditable="true">Верстка сайтов, разработка на JavaScript, работа с API</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="section">
-                    <div class="section-title">Образование</div>
-                    <div id="education">
-                        <div class="edu-item">
-                            <div class="edu-title" contenteditable="true">CибГУТИ</div>
-                            <div class="edu-date" contenteditable="true">2025 — 2029</div>
-                            <div contenteditable="true">Факультет информационно вычислительной техники</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="action-buttons">
-            <button class="action-btn reset-btn" id="resetBtn">Сбросить изменения</button>
-            <button class="download-btn" id="downloadBtn">📄 Скачать PDF</button>
+<div class="resume-container" id="resume">
+    <div class="resume-header">
+        <h1 contenteditable="true" id="name">Иван Петров</h1>
+        <div class="title" contenteditable="true" id="position">Frontend-разработчик / React специалист</div>
+        <div class="contacts">
+            <span contenteditable="true" id="email">ivan@example.com</span>
+            <span contenteditable="true" id="phone">+7 (999) 123-45-67</span>
+            <span contenteditable="true" id="location">Москва, Россия</span>
         </div>
     </div>
 
-    <script>
-        function addWaveEffect(element) {
-            element.addEventListener('click', function(e) {
-                const ripple = document.createElement('span');
-                ripple.className = 'ripple';
-                const rect = element.getBoundingClientRect();
-                const size = Math.max(rect.width, rect.height);
-                const x = e.clientX - rect.left - size / 2;
-                const y = e.clientY - rect.top - size / 2;
-                
-                ripple.style.width = ripple.style.height = size + 'px';
-                ripple.style.left = x + 'px';
-                ripple.style.top = y + 'px';
-                ripple.style.position = 'absolute';
-                
-                element.style.position = 'relative';
-                element.appendChild(ripple);
-                
-                setTimeout(() => ripple.remove(), 600);
-            });
-        }
+    <div class="resume-content">
+        <div class="sidebar">
+            <div class="section" id="skillsSection">
+                <div class="section-header">
+                    <div class="section-title">Навыки</div>
+                    <div class="section-controls">
+                        <button class="ctrl-btn ctrl-btn-add" data-section="skills">➕ Добавить</button>
+                        <button class="ctrl-btn ctrl-btn-remove" data-section="skills" data-remove-last="skills">🗑 Удалить последний</button>
+                    </div>
+                </div>
+                <div class="skill-list" id="skillsList">
+                    <div class="skill-item" contenteditable="true">JavaScript <span class="remove-item" data-type="skill">✕</span></div>
+                    <div class="skill-item" contenteditable="true">React <span class="remove-item" data-type="skill">✕</span></div>
+                    <div class="skill-item" contenteditable="true">HTML/CSS <span class="remove-item" data-type="skill">✕</span></div>
+                    <div class="skill-item" contenteditable="true">Node.js <span class="remove-item" data-type="skill">✕</span></div>
+                    <div class="skill-item" contenteditable="true">Git <span class="remove-item" data-type="skill">✕</span></div>
+                </div>
+            </div>
 
-        const clickableElements = document.querySelectorAll('.section-title, .job-item, .edu-item, .skill-item, .download-btn, .reset-btn');
-        clickableElements.forEach(el => addWaveEffect(el));
+            <div class="section" id="languagesSection">
+                <div class="section-header">
+                    <div class="section-title">Языки</div>
+                    <div class="section-controls">
+                        <button class="ctrl-btn ctrl-btn-add" data-section="languages">➕ Добавить</button>
+                        <button class="ctrl-btn ctrl-btn-remove" data-section="languages" data-remove-last="languages">🗑 Удалить последний</button>
+                    </div>
+                </div>
+                <div class="skill-list" id="languagesList">
+                    <div class="skill-item" contenteditable="true">Русский (родной) <span class="remove-item" data-type="language">✕</span></div>
+                    <div class="skill-item" contenteditable="true">English (B2) <span class="remove-item" data-type="language">✕</span></div>
+                </div>
+            </div>
 
-        // === Анимация при редактировании ===
-        const editableElements = document.querySelectorAll('[contenteditable="true"]');
-        editableElements.forEach(el => {
-            el.addEventListener('blur', function() {
-                this.classList.add('editing-animation');
-                setTimeout(() => this.classList.remove('editing-animation'), 400);
-                saveToLocalStorage();
-            });
+            <div class="section" id="contactsSection">
+                <div class="section-header">
+                    <div class="section-title">Контакты</div>
+                    <div class="section-controls">
+                        <button class="ctrl-btn ctrl-btn-add" data-section="contacts">➕ Добавить контакт</button>
+                        <button class="ctrl-btn ctrl-btn-remove" data-section="contacts" data-remove-last="contacts">🗑 Удалить последний</button>
+                    </div>
+                </div>
+                <div id="contactsContainer" class="contact-block">
+                    <div contenteditable="true" class="contact-line">GitHub: github.com/ivanpetrov</div>
+                    <div contenteditable="true" class="contact-line">Telegram: @ivan_dev</div>
+                    <div contenteditable="true" class="contact-line">LinkedIn: linkedin.com/in/ivan</div>
+                </div>
+                <div class="info-hint">✏️ Клик для редактирования контакта. Кнопки добавят новую строку.</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="section">
+                <div class="section-title">Опыт работы</div>
+                <div id="experience">
+                    <div class="job-item">
+                        <div class="job-title" contenteditable="true">Frontend-разработчик</div>
+                        <div class="job-date" contenteditable="true">2025 — настоящее время | Компания "Ядро"</div>
+                        <div contenteditable="true">Разработка SPA на React, оптимизация, код-ревью, наставничество</div>
+                    </div>
+                    <div class="job-item">
+                        <div class="job-title" contenteditable="true">Junior Developer</div>
+                        <div class="job-date" contenteditable="true">2020 — 2022 | Стартап "ВебСервис"</div>
+                        <div contenteditable="true">Верстка, JavaScript, интеграция API, поддержка проектов</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Образование</div>
+                <div id="education">
+                    <div class="edu-item">
+                        <div class="edu-title" contenteditable="true">СибГУТИ</div>
+                        <div class="edu-date" contenteditable="true">2025 — 2029</div>
+                        <div contenteditable="true">Факультет информационно-вычислительной техники</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="action-buttons">
+        <button class="reset-btn" id="resetBtn">⟳ Сбросить изменения</button>
+        <button class="download-btn" id="downloadBtn">📄 Скачать PDF</button>
+    </div>
+</div>
+
+<script>
+    function addWaveEffect(element) {
+        if (!element || element._waveAdded) return;
+        element.addEventListener('click', function(e) {
+            const rect = element.getBoundingClientRect();
+            const ripple = document.createElement('span');
+            ripple.className = 'ripple';
+            const size = Math.max(rect.width, rect.height);
+            const x = e.clientX - rect.left - size / 2;
+            const y = e.clientY - rect.top - size / 2;
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = x + 'px';
+            ripple.style.top = y + 'px';
+            ripple.style.position = 'absolute';
+            element.style.position = 'relative';
+            element.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 500);
         });
+        element._waveAdded = true;
+    }
 
-        function saveToLocalStorage() {
-            const data = {
-                name: document.getElementById('name').innerHTML,
-                position: document.getElementById('position').innerHTML,
-                email: document.getElementById('email').innerHTML,
-                phone: document.getElementById('phone').innerHTML,
-                location: document.getElementById('location').innerHTML,
-                contactDetails: document.getElementById('contact-details').innerHTML,
-                skills: Array.from(document.querySelectorAll('#skills .skill-item')).map(el => el.innerHTML),
-                languages: Array.from(document.querySelectorAll('#languages .skill-item')).map(el => el.innerHTML),
-                experience: Array.from(document.querySelectorAll('#experience .job-item')).map(job => ({
-                    title: job.querySelector('.job-title').innerHTML,
-                    date: job.querySelector('.job-date').innerHTML,
-                    desc: job.children[2].innerHTML
-                })),
-                education: Array.from(document.querySelectorAll('#education .edu-item')).map(edu => ({
-                    title: edu.querySelector('.edu-title').innerHTML,
-                    date: edu.querySelector('.edu-date').innerHTML,
-                    desc: edu.children[2].innerHTML
-                }))
-            };
-            localStorage.setItem('resumeData', JSON.stringify(data));
-        }
+    function applyRipplesToControls() {
+        document.querySelectorAll('.ctrl-btn, .reset-btn, .download-btn, .remove-item, .job-item, .edu-item').forEach(el => addWaveEffect(el));
+    }
 
-        function loadFromLocalStorage() {
-            const saved = localStorage.getItem('resumeData');
-            if (!saved) return;
-            
+    function saveFullStateToLocalStorage() {
+        const skills = Array.from(document.querySelectorAll('#skillsList .skill-item')).map(el => el.innerText.replace('✕', '').trim());
+        const languages = Array.from(document.querySelectorAll('#languagesList .skill-item')).map(el => el.innerText.replace('✕', '').trim());
+        
+        const contactLines = Array.from(document.querySelectorAll('#contactsContainer > [contenteditable="true"]')).map(el => el.innerHTML);
+        
+        const experience = Array.from(document.querySelectorAll('#experience .job-item')).map(job => ({
+            title: job.querySelector('.job-title')?.innerHTML || '',
+            date: job.querySelector('.job-date')?.innerHTML || '',
+            desc: job.children[2]?.innerHTML || ''
+        }));
+        const education = Array.from(document.querySelectorAll('#education .edu-item')).map(edu => ({
+            title: edu.querySelector('.edu-title')?.innerHTML || '',
+            date: edu.querySelector('.edu-date')?.innerHTML || '',
+            desc: edu.children[2]?.innerHTML || ''
+        }));
+        
+        const state = {
+            name: document.getElementById('name').innerHTML,
+            position: document.getElementById('position').innerHTML,
+            email: document.getElementById('email').innerHTML,
+            phone: document.getElementById('phone').innerHTML,
+            location: document.getElementById('location').innerHTML,
+            skills,
+            languages,
+            contacts: contactLines,
+            experience,
+            education
+        };
+        localStorage.setItem('resumeFullState', JSON.stringify(state));
+    }
+
+    function loadFullStateFromLocalStorage() {
+        const saved = localStorage.getItem('resumeFullState');
+        if (!saved) return false;
+        try {
             const data = JSON.parse(saved);
             document.getElementById('name').innerHTML = data.name;
             document.getElementById('position').innerHTML = data.position;
             document.getElementById('email').innerHTML = data.email;
             document.getElementById('phone').innerHTML = data.phone;
             document.getElementById('location').innerHTML = data.location;
-            document.getElementById('contact-details').innerHTML = data.contactDetails;
             
-            const skillsContainer = document.getElementById('skills');
+            const skillsContainer = document.getElementById('skillsList');
             skillsContainer.innerHTML = '';
-            data.skills.forEach(skill => {
-                const div = document.createElement('div');
-                div.className = 'skill-item';
-                div.setAttribute('contenteditable', 'true');
-                div.innerHTML = skill;
-                skillsContainer.appendChild(div);
-            });
+            if (data.skills && data.skills.length) {
+                data.skills.forEach(skill => {
+                    if (skill.trim()) {
+                        const skillDiv = createSkillElement(skill, 'skill');
+                        skillsContainer.appendChild(skillDiv);
+                    }
+                });
+            } else {
+                skillsContainer.innerHTML = '<div class="skill-item" contenteditable="true">Новый навык <span class="remove-item" data-type="skill">✕</span></div>';
+            }
             
-            const langsContainer = document.getElementById('languages');
+            const langsContainer = document.getElementById('languagesList');
             langsContainer.innerHTML = '';
-            data.languages.forEach(lang => {
-                const div = document.createElement('div');
-                div.className = 'skill-item';
-                div.setAttribute('contenteditable', 'true');
-                div.innerHTML = lang;
-                langsContainer.appendChild(div);
-            });
+            if (data.languages && data.languages.length) {
+                data.languages.forEach(lang => {
+                    if (lang.trim()) {
+                        const langDiv = createSkillElement(lang, 'language');
+                        langsContainer.appendChild(langDiv);
+                    }
+                });
+            } else {
+                langsContainer.innerHTML = '<div class="skill-item" contenteditable="true">Язык <span class="remove-item" data-type="language">✕</span></div>';
+            }
+            
+            const contactsContainer = document.getElementById('contactsContainer');
+            contactsContainer.innerHTML = '';
+            if (data.contacts && data.contacts.length) {
+                data.contacts.forEach(contactHtml => {
+                    const contactDiv = document.createElement('div');
+                    contactDiv.setAttribute('contenteditable', 'true');
+                    contactDiv.className = 'contact-line';
+                    contactDiv.innerHTML = contactHtml || 'Новый контакт';
+                    contactsContainer.appendChild(contactDiv);
+                });
+            } else {
+                const defaultContact = document.createElement('div');
+                defaultContact.setAttribute('contenteditable', 'true');
+                defaultContact.className = 'contact-line';
+                defaultContact.innerHTML = 'Email: example@mail.com';
+                contactsContainer.appendChild(defaultContact);
+            }
             
             const expContainer = document.getElementById('experience');
             expContainer.innerHTML = '';
-            data.experience.forEach(job => {
-                const div = document.createElement('div');
-                div.className = 'job-item';
-                div.innerHTML = `
-                    <div class="job-title" contenteditable="true">${job.title}</div>
-                    <div class="job-date" contenteditable="true">${job.date}</div>
-                    <div contenteditable="true">${job.desc}</div>
-                `;
-                expContainer.appendChild(div);
-            });
+            if (data.experience && data.experience.length) {
+                data.experience.forEach(job => {
+                    const jobDiv = document.createElement('div');
+                    jobDiv.className = 'job-item';
+                    jobDiv.innerHTML = `
+                        <div class="job-title" contenteditable="true">${escapeHtml(job.title)}</div>
+                        <div class="job-date" contenteditable="true">${escapeHtml(job.date)}</div>
+                        <div contenteditable="true">${escapeHtml(job.desc)}</div>
+                    `;
+                    expContainer.appendChild(jobDiv);
+                });
+            } else {
+                expContainer.innerHTML = '<div class="job-item"><div class="job-title" contenteditable="true">Опыт работы</div><div class="job-date" contenteditable="true">2024 — ...</div><div contenteditable="true">Описание</div></div>';
+            }
             
             const eduContainer = document.getElementById('education');
             eduContainer.innerHTML = '';
-            data.education.forEach(edu => {
-                const div = document.createElement('div');
-                div.className = 'edu-item';
-                div.innerHTML = `
-                    <div class="edu-title" contenteditable="true">${edu.title}</div>
-                    <div class="edu-date" contenteditable="true">${edu.date}</div>
-                    <div contenteditable="true">${edu.desc}</div>
-                `;
-                eduContainer.appendChild(div);
-            });
-        }
-
-        function resetToDefault() {
-            localStorage.removeItem('resumeData');
-            location.reload();
-        }
-
-        async function downloadPDF() {
-            const element = document.getElementById('resume');
-            const opt = {
-                margin: [0.5, 0.5, 0.5, 0.5],
-                filename: 'resume.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, logging: false },
-                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-            };
-            
-            try {
-                await html2pdf().set(opt).from(element).save();
-            } catch (error) {
-                console.error('PDF generation error:', error);
-                alert('Ошибка при создании PDF. Попробуйте использовать печать браузера (Ctrl+P)');
+            if (data.education && data.education.length) {
+                data.education.forEach(edu => {
+                    const eduDiv = document.createElement('div');
+                    eduDiv.className = 'edu-item';
+                    eduDiv.innerHTML = `
+                        <div class="edu-title" contenteditable="true">${escapeHtml(edu.title)}</div>
+                        <div class="edu-date" contenteditable="true">${escapeHtml(edu.date)}</div>
+                        <div contenteditable="true">${escapeHtml(edu.desc)}</div>
+                    `;
+                    eduContainer.appendChild(eduDiv);
+                });
+            } else {
+                eduContainer.innerHTML = '<div class="edu-item"><div class="edu-title" contenteditable="true">Университет</div><div class="edu-date" contenteditable="true">Год</div><div contenteditable="true">Специальность</div></div>';
             }
-        }
-
-        loadFromLocalStorage();
-        
-        function reapplyWaveEffects() {
-            const newElements = document.querySelectorAll('.section-title, .job-item, .edu-item, .skill-item, .download-btn, .reset-btn');
-            newElements.forEach(el => {
-                if (!el.hasWaveEffect) {
-                    addWaveEffect(el);
-                    el.hasWaveEffect = true;
+            
+            attachRemoveEventsToAllItems();
+            return true;
+        } catch(e) { console.warn(e); return false; }
+    }
+    
+    function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, function(m){if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+    
+    function createSkillElement(text, type) {
+        const div = document.createElement('div');
+        div.className = 'skill-item';
+        div.setAttribute('contenteditable', 'true');
+        const spanRemove = document.createElement('span');
+        spanRemove.className = 'remove-item';
+        spanRemove.setAttribute('data-type', type);
+        spanRemove.innerHTML = '✕';
+        div.innerHTML = text;
+        div.appendChild(spanRemove);
+        return div;
+    }
+    
+    function attachRemoveEventsToAllItems() {
+        document.querySelectorAll('.remove-item').forEach(btn => {
+            if (btn._removeHandler) return;
+            const newBtn = btn.cloneNode(true);
+            btn.parentNode.replaceChild(newBtn, btn);
+            newBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const parentItem = this.parentElement;
+                if (parentItem && parentItem.classList && parentItem.classList.contains('skill-item')) {
+                    parentItem.remove();
+                    saveFullStateToLocalStorage();
+                } else if (parentItem && parentItem.classList && parentItem.classList.contains('contact-line')) {
+                    parentItem.remove();
+                    saveFullStateToLocalStorage();
+                } else {
+                    if(parentItem) parentItem.remove();
+                    saveFullStateToLocalStorage();
                 }
             });
+            newBtn._removeHandler = true;
+        });
+    }
+    
+    function addItemToSection(sectionId) {
+        if (sectionId === 'skills') {
+            const container = document.getElementById('skillsList');
+            const newSkill = createSkillElement('Новый навык', 'skill');
+            container.appendChild(newSkill);
+            addWaveEffect(newSkill.querySelector('.remove-item'));
+            newSkill.setAttribute('contenteditable', 'true');
+            saveFullStateToLocalStorage();
+        } 
+        else if (sectionId === 'languages') {
+            const container = document.getElementById('languagesList');
+            const newLang = createSkillElement('Новый язык', 'language');
+            container.appendChild(newLang);
+            addWaveEffect(newLang.querySelector('.remove-item'));
+            newLang.setAttribute('contenteditable', 'true');
+            saveFullStateToLocalStorage();
+        }
+        else if (sectionId === 'contacts') {
+            const container = document.getElementById('contactsContainer');
+            const newContact = document.createElement('div');
+            newContact.setAttribute('contenteditable', 'true');
+            newContact.className = 'contact-line';
+            newContact.innerHTML = 'Новый контакт (email, соцсеть)';
+            container.appendChild(newContact);
+            const removeIcon = document.createElement('span');
+            removeIcon.className = 'remove-item';
+            removeIcon.innerHTML = ' ✕';
+            removeIcon.style.marginLeft = '8px';
+            removeIcon.style.cursor = 'pointer';
+            removeIcon.style.fontSize = '12px';
+            removeIcon.style.opacity = '0.7';
+            removeIcon.addEventListener('click', (e) => {
+                e.stopPropagation();
+                newContact.remove();
+                saveFullStateToLocalStorage();
+            });
+            newContact.appendChild(removeIcon);
+            addWaveEffect(removeIcon);
+            saveFullStateToLocalStorage();
+        }
+        attachRemoveEventsToAllItems();
+        reapplyWaveToNewElements();
+    }
+    
+    function removeLastFromSection(sectionId) {
+        if (sectionId === 'skills') {
+            const container = document.getElementById('skillsList');
+            if (container.children.length > 1) container.removeChild(container.lastElementChild);
+            else alert('Нельзя удалить последний навык, оставьте хотя бы один');
+        } 
+        else if (sectionId === 'languages') {
+            const container = document.getElementById('languagesList');
+            if (container.children.length > 1) container.removeChild(container.lastElementChild);
+            else alert('Нельзя удалить последний язык');
+        }
+        else if (sectionId === 'contacts') {
+            const container = document.getElementById('contactsContainer');
+            if (container.children.length > 1) container.removeChild(container.lastElementChild);
+            else alert('Оставьте хотя бы один контакт');
+        }
+        saveFullStateToLocalStorage();
+        attachRemoveEventsToAllItems();
+    }
+    
+    function reapplyWaveToNewElements() {
+        document.querySelectorAll('.ctrl-btn, .remove-item, .skill-item, .download-btn, .reset-btn, .job-item, .edu-item').forEach(el => addWaveEffect(el));
+    }
+    
+    function resetToDefault() {
+        localStorage.removeItem('resumeFullState');
+        location.reload();
+    }
+    
+    async function downloadPDF() {
+        const element = document.getElementById('resume');
+        const opt = {
+            margin: [0.5, 0.5, 0.5, 0.5],
+            filename: 'resume_updated.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, logging: false },
+            jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+        };
+        try {
+            await html2pdf().set(opt).from(element).save();
+        } catch (error) {
+            alert('Ошибка PDF, используйте Ctrl+P');
+        }
+    }
+    
+    function init() {
+        const loaded = loadFullStateFromLocalStorage();
+        if (!loaded) {
+            attachRemoveEventsToAllItems();
         }
         
+        document.querySelectorAll('.ctrl-btn-add').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const section = btn.getAttribute('data-section');
+                if (section) addItemToSection(section);
+            });
+        });
+        document.querySelectorAll('.ctrl-btn-remove').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const section = btn.getAttribute('data-section');
+                if (section) removeLastFromSection(section);
+            });
+        });
         
-        const observer = new MutationObserver(() => reapplyWaveEffects());
-        observer.observe(document.body, { childList: true, subtree: true });
+        document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+            el.addEventListener('blur', () => {
+                saveFullStateToLocalStorage();
+                el.classList.add('editing-animation');
+                setTimeout(() => el.classList.remove('editing-animation'), 300);
+            });
+        });
+        
+        const observer = new MutationObserver(() => {
+            saveFullStateToLocalStorage();
+            attachRemoveEventsToAllItems();
+            reapplyWaveToNewElements();
+        });
+        observer.observe(document.getElementById('skillsList'), { childList: true, subtree: true });
+        observer.observe(document.getElementById('languagesList'), { childList: true, subtree: true });
+        observer.observe(document.getElementById('contactsContainer'), { childList: true, subtree: true });
         
         document.getElementById('resetBtn').addEventListener('click', resetToDefault);
-        
         document.getElementById('downloadBtn').addEventListener('click', downloadPDF);
         
-        document.addEventListener('blur', (e) => {
-            if (e.target.getAttribute('contenteditable') === 'true') {
-                saveToLocalStorage();
-            }
-        }, true);
-    </script>
+        applyRipplesToControls();
+        attachRemoveEventsToAllItems();
+    }
+    
+    init();
+</script>
 </body>
 </html>
