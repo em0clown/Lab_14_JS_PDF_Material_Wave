@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Резюме | Редактор</title>
     <style>
-        /* [Базовые стили оставлены без изменений для краткости, добавлены новые] */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', system-ui, sans-serif;
@@ -33,7 +32,6 @@
             border-radius: 20px; font-size: 0.9em; display: flex; align-items: center; gap: 5px; 
         }
         
-        /* Кнопки удаления */
         .remove-item {
             cursor: pointer;
             width: 16px; height: 16px;
@@ -44,10 +42,8 @@
         }
         .remove-item:hover { background: rgba(255,0,0,0.6); }
 
-        /* Элементы, которые НЕ должны быть в PDF */
         .no-print { transition: opacity 0.2s; }
         
-        /* Кнопки действий */
         .action-buttons { display: flex; justify-content: center; gap: 15px; padding: 20px; background: #eee; }
         button { cursor: pointer; border: none; border-radius: 25px; padding: 10px 20px; font-weight: bold; }
         .download-btn { background: #667eea; color: white; }
@@ -118,7 +114,6 @@
     const skillsList = document.getElementById('skillsList');
     const languagesList = document.getElementById('languagesList');
 
-    // 1. Делегирование удаления (один слушатель на всё дерево)
     resume.addEventListener('click', (e) => {
         if (e.target.classList.contains('remove-item')) {
             e.target.closest('.skill-item, .contact-line')?.remove();
@@ -126,7 +121,6 @@
         }
     });
 
-    // 2. Добавление элементов
     document.querySelectorAll('.ctrl-btn-add').forEach(btn => {
         btn.addEventListener('click', () => {
             const type = btn.dataset.type;
@@ -140,7 +134,6 @@
         });
     });
 
-    // 3. Сохранение состояния
     function saveState() {
         const data = {
             name: document.getElementById('name').innerHTML,
@@ -152,10 +145,8 @@
         localStorage.setItem('resume_data', JSON.stringify(data));
     }
 
-    // Слушаем изменения текста
     resume.addEventListener('input', () => saveState());
 
-    // 4. Загрузка данных
     function loadState() {
         const saved = localStorage.getItem('resume_data');
         if (!saved) return;
@@ -167,11 +158,9 @@
         document.getElementById('experience').innerHTML = data.experience;
     }
 
-    // 5. Генерация PDF (с очисткой от кнопок)
     async function downloadPDF() {
         const element = document.getElementById('resume');
         
-        // Скрываем ненужные элементы перед печатью
         const noPrintElements = document.querySelectorAll('.no-print');
         noPrintElements.forEach(el => el.style.display = 'none');
         const removeIcons = document.querySelectorAll('.remove-item');
@@ -188,7 +177,6 @@
         try {
             await html2pdf().set(opt).from(element).save();
         } finally {
-            // Возвращаем всё как было
             noPrintElements.forEach(el => el.style.display = '');
             removeIcons.forEach(el => el.style.visibility = 'visible');
         }
