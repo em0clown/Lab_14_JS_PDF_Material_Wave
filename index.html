@@ -25,7 +25,6 @@
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             overflow: hidden;
-            transition: transform 0.3s ease;
         }
 
         .resume-header {
@@ -72,7 +71,6 @@
             border-radius: 16px;
             padding: 15px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            transition: all 0.2s;
         }
 
         .section-header {
@@ -106,7 +104,6 @@
             font-size: 0.8rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s ease;
             color: #2c3e50;
             display: inline-flex;
             align-items: center;
@@ -134,11 +131,6 @@
             transform: translateY(-2px);
         }
 
-        .ctrl-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-
         .skill-list {
             display: flex;
             flex-wrap: wrap;
@@ -155,9 +147,6 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            transition: all 0.2s;
-            position: relative;
-            cursor: pointer;
         }
 
         .skill-item .remove-item {
@@ -173,7 +162,6 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            transition: background 0.2s;
         }
 
         .skill-item .remove-item:hover {
@@ -187,6 +175,34 @@
             margin-top: 8px;
         }
 
+        .contact-line {
+            padding: 6px 8px;
+            margin: 4px 0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .contact-line .remove-item {
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .contact-line .remove-item:hover {
+            background: #c82333;
+        }
+
         .main-content {
             padding: 0 10px;
         }
@@ -195,8 +211,6 @@
             outline: none;
             padding: 5px;
             border-radius: 8px;
-            transition: all 0.2s ease;
-            cursor: text;
         }
 
         [contenteditable="true"]:hover {
@@ -222,7 +236,6 @@
             margin-bottom: 20px;
             padding: 12px;
             border-left: 3px solid #667eea;
-            transition: all 0.3s ease;
             background: #fefefe;
             border-radius: 12px;
         }
@@ -258,7 +271,6 @@
             font-size: 1rem;
             font-weight: bold;
             cursor: pointer;
-            transition: 0.2s;
         }
 
         .reset-btn {
@@ -270,7 +282,6 @@
             font-size: 1rem;
             font-weight: bold;
             cursor: pointer;
-            transition: 0.2s;
         }
 
         .reset-btn:hover, .download-btn:hover {
@@ -365,11 +376,11 @@
                     </div>
                 </div>
                 <div id="contactsContainer" class="contact-block">
-                    <div contenteditable="true" class="contact-line">GitHub: github.com/ivanpetrov</div>
-                    <div contenteditable="true" class="contact-line">Telegram: @ivan_dev</div>
-                    <div contenteditable="true" class="contact-line">LinkedIn: linkedin.com/in/ivan</div>
+                    <div contenteditable="true" class="contact-line">GitHub: github.com/ivanpetrov <span class="remove-item">✕</span></div>
+                    <div contenteditable="true" class="contact-line">Telegram: @ivan_dev <span class="remove-item">✕</span></div>
+                    <div contenteditable="true" class="contact-line">LinkedIn: linkedin.com/in/ivan <span class="remove-item">✕</span></div>
                 </div>
-                <div class="info-hint">✏️ Клик для редактирования контакта. Кнопки добавят новую строку.</div>
+                <div class="info-hint">✏️ Клик для редактирования</div>
             </div>
         </div>
 
@@ -437,8 +448,12 @@
     function saveFullStateToLocalStorage() {
         const skills = Array.from(document.querySelectorAll('#skillsList .skill-item')).map(el => el.innerText.replace('✕', '').trim());
         const languages = Array.from(document.querySelectorAll('#languagesList .skill-item')).map(el => el.innerText.replace('✕', '').trim());
-        
-        const contactLines = Array.from(document.querySelectorAll('#contactsContainer > [contenteditable="true"]')).map(el => el.innerHTML);
+        const contactLines = Array.from(document.querySelectorAll('#contactsContainer > .contact-line')).map(el => {
+            const clone = el.cloneNode(true);
+            const removeBtn = clone.querySelector('.remove-item');
+            if (removeBtn) removeBtn.remove();
+            return clone.innerText.trim();
+        });
         
         const experience = Array.from(document.querySelectorAll('#experience .job-item')).map(job => ({
             title: job.querySelector('.job-title')?.innerHTML || '',
@@ -506,19 +521,12 @@
             const contactsContainer = document.getElementById('contactsContainer');
             contactsContainer.innerHTML = '';
             if (data.contacts && data.contacts.length) {
-                data.contacts.forEach(contactHtml => {
-                    const contactDiv = document.createElement('div');
-                    contactDiv.setAttribute('contenteditable', 'true');
-                    contactDiv.className = 'contact-line';
-                    contactDiv.innerHTML = contactHtml || 'Новый контакт';
+                data.contacts.forEach(contactText => {
+                    const contactDiv = createContactLine(contactText);
                     contactsContainer.appendChild(contactDiv);
                 });
             } else {
-                const defaultContact = document.createElement('div');
-                defaultContact.setAttribute('contenteditable', 'true');
-                defaultContact.className = 'contact-line';
-                defaultContact.innerHTML = 'Email: example@mail.com';
-                contactsContainer.appendChild(defaultContact);
+                contactsContainer.appendChild(createContactLine('Email: example@mail.com'));
             }
             
             const expContainer = document.getElementById('experience');
@@ -534,8 +542,6 @@
                     `;
                     expContainer.appendChild(jobDiv);
                 });
-            } else {
-                expContainer.innerHTML = '<div class="job-item"><div class="job-title" contenteditable="true">Опыт работы</div><div class="job-date" contenteditable="true">2024 — ...</div><div contenteditable="true">Описание</div></div>';
             }
             
             const eduContainer = document.getElementById('education');
@@ -551,8 +557,6 @@
                     `;
                     eduContainer.appendChild(eduDiv);
                 });
-            } else {
-                eduContainer.innerHTML = '<div class="edu-item"><div class="edu-title" contenteditable="true">Университет</div><div class="edu-date" contenteditable="true">Год</div><div contenteditable="true">Специальность</div></div>';
             }
             
             attachRemoveEventsToAllItems();
@@ -575,6 +579,14 @@
         return div;
     }
     
+    function createContactLine(text) {
+        const div = document.createElement('div');
+        div.setAttribute('contenteditable', 'true');
+        div.className = 'contact-line';
+        div.innerHTML = text + ' <span class="remove-item">✕</span>';
+        return div;
+    }
+    
     function attachRemoveEventsToAllItems() {
         document.querySelectorAll('.remove-item').forEach(btn => {
             if (btn._removeHandler) return;
@@ -588,9 +600,6 @@
                     saveFullStateToLocalStorage();
                 } else if (parentItem && parentItem.classList && parentItem.classList.contains('contact-line')) {
                     parentItem.remove();
-                    saveFullStateToLocalStorage();
-                } else {
-                    if(parentItem) parentItem.remove();
                     saveFullStateToLocalStorage();
                 }
             });
@@ -617,25 +626,10 @@
         }
         else if (sectionId === 'contacts') {
             const container = document.getElementById('contactsContainer');
-            const newContact = document.createElement('div');
-            newContact.setAttribute('contenteditable', 'true');
-            newContact.className = 'contact-line';
-            newContact.innerHTML = 'Новый контакт (email, соцсеть)';
+            const newContact = createContactLine('Новый контакт');
             container.appendChild(newContact);
-            const removeIcon = document.createElement('span');
-            removeIcon.className = 'remove-item';
-            removeIcon.innerHTML = ' ✕';
-            removeIcon.style.marginLeft = '8px';
-            removeIcon.style.cursor = 'pointer';
-            removeIcon.style.fontSize = '12px';
-            removeIcon.style.opacity = '0.7';
-            removeIcon.addEventListener('click', (e) => {
-                e.stopPropagation();
-                newContact.remove();
-                saveFullStateToLocalStorage();
-            });
-            newContact.appendChild(removeIcon);
-            addWaveEffect(removeIcon);
+            const removeIcon = newContact.querySelector('.remove-item');
+            if (removeIcon) addWaveEffect(removeIcon);
             saveFullStateToLocalStorage();
         }
         attachRemoveEventsToAllItems();
@@ -646,17 +640,14 @@
         if (sectionId === 'skills') {
             const container = document.getElementById('skillsList');
             if (container.children.length > 1) container.removeChild(container.lastElementChild);
-            else alert('Нельзя удалить последний навык, оставьте хотя бы один');
         } 
         else if (sectionId === 'languages') {
             const container = document.getElementById('languagesList');
             if (container.children.length > 1) container.removeChild(container.lastElementChild);
-            else alert('Нельзя удалить последний язык');
         }
         else if (sectionId === 'contacts') {
             const container = document.getElementById('contactsContainer');
             if (container.children.length > 1) container.removeChild(container.lastElementChild);
-            else alert('Оставьте хотя бы один контакт');
         }
         saveFullStateToLocalStorage();
         attachRemoveEventsToAllItems();
@@ -674,16 +665,16 @@
     async function downloadPDF() {
         const element = document.getElementById('resume');
         const opt = {
-            margin: [0.5, 0.5, 0.5, 0.5],
-            filename: 'resume_updated.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, logging: false },
+            margin: [0.3, 0.3, 0.3, 0.3],
+            filename: 'resume.pdf',
+            image: { type: 'jpeg', quality: 0.95 },
+            html2canvas: { scale: 2, logging: false, useCORS: true },
             jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
         };
         try {
             await html2pdf().set(opt).from(element).save();
         } catch (error) {
-            alert('Ошибка PDF, используйте Ctrl+P');
+            alert('Ошибка при создании PDF. Используйте печать браузера (Ctrl+P)');
         }
     }
     
