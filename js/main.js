@@ -3,11 +3,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const downloadBtn = document.getElementById('download-btn');
 
     editables.forEach(el => {
-        const savedValue = localStorage.getItem(el.id);
+        if (!el.id) {
+            console.warn('Элементу не задан ID, автосохранение не сработает:', el);
+            return;
+        }
+
+        const savedValue = localStorage.getItem(`resume_field_${el.id}`);
         if (savedValue) el.innerHTML = savedValue;
 
+        let timeout;
         el.addEventListener('input', () => {
-            localStorage.setItem(el.id, el.innerHTML);
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                localStorage.setItem(`resume_field_${el.id}`, el.innerHTML);
+            }, 500); 
         });
     });
 
@@ -17,7 +26,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const ripple = document.createElement('span');
         const rect = target.getBoundingClientRect();
-        const size = Math.max(rect.width, rect.height);
+        
+        const size = Math.sqrt(rect.width ** 2 + rect.height ** 2);
         
         ripple.style.width = ripple.style.height = `${size}px`;
         ripple.style.left = `${e.clientX - rect.left - size/2}px`;
@@ -25,10 +35,17 @@ document.addEventListener('DOMContentLoaded', () => {
         ripple.classList.add('ripple');
         
         target.appendChild(ripple);
-        ripple.addEventListener('animationend', () => ripple.remove());
+        
+        ripple.addEventListener('animationend', () => {
+            ripple.remove();
+        });
     });
 
     downloadBtn.addEventListener('click', () => {
+        if (document.activeElement instanceof HTMLElement) {
+            document.activeElement.blur();
+        }
+        
         window.print();
     });
 });
